@@ -6,8 +6,10 @@ import com.evms.www.model.Event;
 import com.evms.www.model.User;
 import com.evms.www.repository.EventRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -71,5 +73,15 @@ public class EventService {
             return true;
         }
         return false;
+    }
+
+    @Scheduled(fixedRate = 3600000)
+    public void updateEventStatusWhenExpired () {
+        for (Event event: eventRepository.getEventsByEvent_status(Status.OPENED)) {
+            if (event.getEnd_time().isBefore(LocalDateTime.now())) {
+                event.setEvent_status(Status.CLOSED);
+                eventRepository.save(event);
+            }
+        }
     }
 }
