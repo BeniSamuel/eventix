@@ -1,4 +1,11 @@
 package com.evms.www.repository;
 
-public interface BookingRepository {
+import com.evms.www.model.Booking;
+import com.evms.www.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface BookingRepository extends JpaRepository<Booking, Long> {
+    List<Booking> getBookingsByBooker (User booker);
 }
