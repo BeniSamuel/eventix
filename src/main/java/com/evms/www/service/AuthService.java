@@ -6,7 +6,6 @@ import com.evms.www.model.User;
 import com.evms.www.utils.ApiResponse;
 import com.evms.www.utils.JwtUtil;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,21 +22,21 @@ public class AuthService {
     public ResponseEntity<ApiResponse<User>> registerUser (RegisterDto registerDto) {
         User user = userService.createUser(registerDto);
         if (user != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(true, "Successfully registered user!!! 🎉🎉🎉", user));
+            return ApiResponse.created("Successfully registered user!!! 🎉🎉🎉", user);
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(false, "Failed to register user bad request!!! 💔💔😔", null));
+        return ApiResponse.badRequest("Failed to register a user bad request!!! 💔😔😔", null);
     }
 
     public ResponseEntity<ApiResponse<String>> loginUser (LoginDto loginDto) {
         try {
             authenticationManager.authenticate(
-                   new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
 
             User user = userService.getUserByEmail(loginDto.getEmail());
-            return ResponseEntity.ok(new ApiResponse<>(true, "Successfully logged in user!!! 🎉🎉🎉", jwtUtil.generateToken(user.getEmail())));
+            return ApiResponse.ok("Successfully logged in a user!!! 🎉🎉🎉", jwtUtil.generateToken(user.getEmail()));
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse<>(false, "Invalid credentials", null));
+            return ApiResponse.badRequest("Failed to log in a user bad request!!! 💔😔😔", null);
         }
     }
 }
