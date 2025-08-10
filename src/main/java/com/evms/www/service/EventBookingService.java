@@ -36,6 +36,10 @@ public class EventBookingService {
         return bookingRepository.getBookingsByBooker(booker);
     }
 
+    public List<Booking> getBookingByStatus (BookingStatus status) {
+        return bookingRepository.getBookingsByStatus(status);
+    }
+
     public Booking createBooking (BookingDto bookingDto) {
         Event event = eventService.getEventById(bookingDto.getEvent_id());
         if (event == null) {
@@ -47,10 +51,56 @@ public class EventBookingService {
             return null;
         }
 
-        if (event.getEvent_status().equals(Status.OPENED)) {
+        if (event.getStatus().equals(Status.OPENED)) {
             Booking booking = new Booking(event, booker, BookingStatus.PENDING, bookingDto.getBooked_at());
             return bookingRepository.save(booking);
         }
         return null;
+    }
+
+    public Booking approveBooking (Long booking_id) {
+        Booking booking = getBookingById(booking_id);
+        if (booking != null && booking.getStatus().equals(BookingStatus.PENDING)) {
+            booking.setStatus(BookingStatus.APPROVED);
+            return bookingRepository.save(booking);
+        }
+        return null;
+    }
+
+    public Booking updateBooking (Long booking_id, BookingDto bookingDto) {
+        Booking booking = getBookingById(booking_id);
+        if (booking == null) {
+            return null;
+        }
+
+        User booker = userService.getUserById(bookingDto.getUser_id());
+        if (booker == null) {
+            return null;
+        }
+
+        Event event = eventService.getEventById(bookingDto.getEvent_id());
+        if (event == null) {
+            return null;
+        }
+
+        if (booking.getStatus().equals(BookingStatus.APPROVED) && event.getStatus().equals(Status.CLOSED)) {
+            return null;
+        }
+
+        booking.setEvent(event);
+        booking.setBooker(booker);
+        booking.setBooked_at(bookingDto.getBooked_at());
+        booking.setStatus(BookingStatus.PENDING);
+
+        return bookingRepository.save(booking);
+    }
+
+    public Boolean deleteBooking (Long id) {
+        Booking booking = getBookingById(id);
+        if (booking != null) {
+            bookingRepository.delete(booking);
+            return true;
+        }
+        return false;
     }
 }
