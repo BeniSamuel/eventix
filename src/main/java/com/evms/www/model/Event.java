@@ -36,7 +36,7 @@ public class Event {
     private LocalDateTime end_time;
 
     @Enumerated(EnumType.STRING)
-    private Status event_status;
+    private Status status;
 
     public Event (String name, String description, User creator, String location, String overview, LocalDateTime start_time, LocalDateTime end_time, Status event_status) {
         this.name = name;
@@ -46,6 +46,6 @@ public class Event {
         this.overview = overview;
         this.start_time = start_time;
         this.end_time = end_time;
-        this.event_status = event_status;
+        this.status = event_status;
     }
 }
