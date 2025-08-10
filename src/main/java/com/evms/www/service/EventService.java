@@ -77,9 +77,9 @@ public class EventService {
 
     @Scheduled(fixedRate = 3600000)
     public void updateEventStatusWhenExpired () {
-        for (Event event: eventRepository.getEventsByEvent_status(Status.OPENED)) {
+        for (Event event: eventRepository.getEventsByStatus(Status.OPENED)) {
             if (event.getEnd_time().isBefore(LocalDateTime.now())) {
-                event.setEvent_status(Status.CLOSED);
+                event.setStatus(Status.CLOSED);
                 eventRepository.save(event);
             }
         }
