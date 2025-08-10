@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> getEventByCreator (User creator);
-    List<Event> getEventsByEvent_status (Status status);
+    List<Event> getEventsByStatus (Status status);
 }
